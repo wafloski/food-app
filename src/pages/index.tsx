@@ -1,56 +1,99 @@
 import {
+  Input,
   Link as ChakraLink,
   Text,
-  Code,
   List,
   ListIcon,
   ListItem,
+  Button
 } from '@chakra-ui/react'
-import { CheckCircleIcon, LinkIcon } from '@chakra-ui/icons'
 
-import { Hero } from '../components/Hero'
-import { Container } from '../components/Container'
-import { Main } from '../components/Main'
-import { DarkModeSwitch } from '../components/DarkModeSwitch'
-import { CTA } from '../components/CTA'
-import { Footer } from '../components/Footer'
+import axios from 'axios';
+import React from 'react';
 
-const Index = () => (
-  <Container height="100vh">
-    <Hero />
-    <Main>
-      <Text>
-        Example repository of <Code>Next.js</Code> + <Code>chakra-ui</Code> +{' '}
-        <Code>typescript</Code>.
-      </Text>
+import { Hero } from '../components/Hero';
+import { Container } from '../components/Container';
+import { Main } from '../components/Main';
+import { DarkModeSwitch } from '../components/DarkModeSwitch';
+import { Footer } from '../components/Footer';
+import { useState } from 'react';
 
-      <List spacing={3} my={0}>
+const apiKey: string = 'd561dda8623e470b971a46b1e4b102f4';
+
+const texts: Record<string, string> = {
+  footer: 'Footer text'
+};
+
+const Index = () => {
+  const [queryValue, setQueryValue] = useState<string>('');
+  const [recentQueries, setRecentQueries] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+  const handleQueryInputChange = (e) => setQueryValue(e.target.value);
+  const submitQuery = () => {
+    if (!queryValue) return;
+    if (recentQueries.length >= 10) {
+      recentQueries.pop();
+    }
+    setRecentQueries([queryValue, ...recentQueries]);
+    // axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${apiKey}&query=${queryValue}`)
+    //   .then((res) => console.log(res)
+    // );
+  };
+
+  const handleRecentQueryClick = (e) => {
+    setQueryValue(e.target.innerText);
+    axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${apiKey}&query=${queryValue}`)
+      .then((res) => setSearchResults(res.data.results))
+      .catch((error) => console.log(error))
+    ;
+    console.log(searchResults);
+  };
+
+  const QueriesList = () => (
+    <List>
+      {recentQueries.map((item) =>
+        <ListItem onClick={handleRecentQueryClick}>
+          {item}
+        </ListItem>)}
+    </List>
+  );
+
+  const RecipesList = () => (
+    <List>
+      {searchResults.map((item) =>
         <ListItem>
-          <ListIcon as={CheckCircleIcon} color="green.500" />
-          <ChakraLink
-            isExternal
-            href="https://chakra-ui.com"
-            flexGrow={1}
-            mr={2}
-          >
-            Chakra UI <LinkIcon />
-          </ChakraLink>
-        </ListItem>
-        <ListItem>
-          <ListIcon as={CheckCircleIcon} color="green.500" />
-          <ChakraLink isExternal href="https://nextjs.org" flexGrow={1} mr={2}>
-            Next.js <LinkIcon />
-          </ChakraLink>
-        </ListItem>
-      </List>
-    </Main>
+          {item.title}
+        </ListItem>)}
+    </List>
+  );
 
-    <DarkModeSwitch />
-    <Footer>
-      <Text>Next ❤️ Chakra</Text>
-    </Footer>
-    <CTA />
-  </Container>
-)
+  return (
+    <Container height="100vh">
+      <Hero/>
+      <Main>
+        <Input
+          value={queryValue}
+          onChange={handleQueryInputChange}
+          placeholder='Please enter query'
+        />
+        <Button
+          width="100%"
+          variant="solid"
+          colorScheme="green"
+          onClick={submitQuery}
+          disabled={!queryValue}
+        >
+          submit
+        </Button>
+        <QueriesList />
+        <RecipesList />
+      </Main>
+      <DarkModeSwitch/>
+      <Footer>
+        {texts.footer}
+      </Footer>
+    </Container>
+  );
+};
 
 export default Index
