@@ -5,11 +5,15 @@ import {
   List,
   ListIcon,
   ListItem,
-  Button
+  Button,
+  Stack,
+  Image,
+  Flex,
+  Box
 } from '@chakra-ui/react'
 
 import axios from 'axios';
-import React from 'react';
+import React, { CSSProperties } from 'react';
 
 import { Hero } from '../components/Hero';
 import { Container } from '../components/Container';
@@ -21,7 +25,21 @@ import { useState } from 'react';
 const apiKey: string = 'd561dda8623e470b971a46b1e4b102f4';
 
 const texts: Record<string, string> = {
-  footer: 'Footer text'
+  footer: 'Enjoy!',
+  submit: 'submit',
+  lastSearches: 'Last searches'
+};
+
+const styles: Record<string, CSSProperties> = {
+  recipesListWrapper: {
+    display: 'flex',
+    flexWrap: 'wrap'
+  },
+  recipesListItem: {
+    width: '33.3333%',
+    marginBottom: '30px',
+    padding: '10px'
+  }
 };
 
 const Index = () => {
@@ -59,32 +77,42 @@ const Index = () => {
   );
 
   const RecipesList = () => (
-    <List>
-      {searchResults.map((item) =>
-        <ListItem>
-          {item.title}
-        </ListItem>)}
-    </List>
+    <Flex as='div'>
+      <List style={styles.recipesListWrapper}>
+        {searchResults.map((item) =>
+          <ListItem style={styles.recipesListItem}>
+            <Image
+              objectFit="cover"
+              src={item.image}
+              alt={item.title}
+            />
+            {item.title}
+          </ListItem>
+        )}
+      </List>
+    </Flex>
   );
 
   return (
-    <Container height="100vh">
+    <Container>
       <Hero/>
       <Main>
-        <Input
-          value={queryValue}
-          onChange={handleQueryInputChange}
-          placeholder='Please enter query'
-        />
-        <Button
-          width="100%"
-          variant="solid"
-          colorScheme="green"
-          onClick={submitQuery}
-          disabled={!queryValue}
-        >
-          submit
-        </Button>
+        <Flex as='div'>
+          <Input
+            value={queryValue}
+            onChange={handleQueryInputChange}
+            placeholder='Please enter query'
+          />
+          <Button
+            width="100%"
+            variant="solid"
+            colorScheme="green"
+            onClick={submitQuery}
+            disabled={!queryValue}
+          >
+            {texts.submit}
+          </Button>
+        </Flex>
         <QueriesList />
         <RecipesList />
       </Main>
