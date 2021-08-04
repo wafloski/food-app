@@ -1,15 +1,10 @@
 import {
   Input,
-  Link as ChakraLink,
-  Text,
   List,
-  ListIcon,
   ListItem,
   Button,
-  Stack,
   Image,
-  Flex,
-  Box
+  Flex
 } from '@chakra-ui/react'
 
 import axios from 'axios';
@@ -21,19 +16,26 @@ import { Main } from '../components/Main';
 import { DarkModeSwitch } from '../components/DarkModeSwitch';
 import { Footer } from '../components/Footer';
 import { useState } from 'react';
+import { QueriesList } from '../components/QueriesList';
 
-const apiKey: string = 'd561dda8623e470b971a46b1e4b102f4';
+import { apiKey } from '../constants/configs';
 
 const texts: Record<string, string> = {
   footer: 'Enjoy!',
   submit: 'submit',
-  lastSearches: 'Last searches'
+  lastSearches: 'Last searches: '
 };
 
 const styles: Record<string, CSSProperties> = {
+  queriesListWrapper: {
+    marginTop: '10px'
+  },
   recipesListWrapper: {
     display: 'flex',
     flexWrap: 'wrap'
+  },
+  queriesListItem: {
+    cursor: 'pointer'
   },
   recipesListItem: {
     width: '33.3333%',
@@ -53,28 +55,23 @@ const Index = () => {
       recentQueries.pop();
     }
     setRecentQueries([queryValue, ...recentQueries]);
-    // axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${apiKey}&query=${queryValue}`)
-    //   .then((res) => console.log(res)
-    // );
-  };
-
-  const handleRecentQueryClick = (e) => {
-    setQueryValue(e.target.innerText);
     axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${apiKey}&query=${queryValue}`)
       .then((res) => setSearchResults(res.data.results))
       .catch((error) => console.log(error))
-    ;
-    console.log(searchResults);
   };
 
-  const QueriesList = () => (
-    <List>
-      {recentQueries.map((item) =>
-        <ListItem onClick={handleRecentQueryClick}>
-          {item}
-        </ListItem>)}
-    </List>
-  );
+  // const QueriesList = () => (
+  //   <>
+  //     {texts.lastSearches}
+  //     <List style={styles.queriesListWrapper}>
+  //       {recentQueries.map((item) =>
+  //         <ListItem style={styles.queriesListItem} onClick={handleRecentQueryClick}>
+  //           {item}
+  //         </ListItem>
+  //       )}
+  //     </List>
+  //   </>
+  // );
 
   const RecipesList = () => (
     <Flex as='div'>
@@ -85,6 +82,7 @@ const Index = () => {
               objectFit="cover"
               src={item.image}
               alt={item.title}
+              mb='4'
             />
             {item.title}
           </ListItem>
@@ -97,7 +95,7 @@ const Index = () => {
     <Container>
       <Hero/>
       <Main>
-        <Flex as='div'>
+        <Flex as='div' mb='6'>
           <Input
             value={queryValue}
             onChange={handleQueryInputChange}
@@ -113,7 +111,14 @@ const Index = () => {
             {texts.submit}
           </Button>
         </Flex>
-        <QueriesList />
+        {recentQueries.length &&
+          <QueriesList
+            data={recentQueries}
+            queryValue={queryValue}
+            setQuery={setQueryValue}
+            setSearchResults={setSearchResults}
+          />
+        }
         <RecipesList />
       </Main>
       <DarkModeSwitch/>
