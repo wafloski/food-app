@@ -3,11 +3,11 @@ import { Flex, Heading } from '@chakra-ui/react'
 
 export const Hero = ({ title }: { title: string }) => (
   <Flex
-    justifyContent="center"
-    bgGradient="linear(to-l, #7928CA, #FF0080)"
-    bgClip="text"
+    justifyContent='center'
+    bgGradient='linear(to-l, #7928CA, #FF0080)'
+    bgClip='text'
   >
-    <Heading fontSize="5vw">{title}</Heading>
+    <Heading fontSize='5vw'>{title}</Heading>
   </Flex>
 );
 

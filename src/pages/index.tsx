@@ -1,14 +1,11 @@
 import {
   Input,
-  List,
-  ListItem,
   Button,
-  Image,
   Flex
 } from '@chakra-ui/react'
 
 import axios from 'axios';
-import React, { CSSProperties } from 'react';
+import React, { FunctionComponent } from 'react';
 
 import { Hero } from '../components/Hero';
 import { Container } from '../components/Container';
@@ -17,6 +14,7 @@ import { DarkModeSwitch } from '../components/DarkModeSwitch';
 import { Footer } from '../components/Footer';
 import { useState } from 'react';
 import { QueriesList } from '../components/QueriesList';
+import { RecipesList } from '../components/RecipesList';
 
 import { apiKey } from '../constants/configs';
 
@@ -26,29 +24,13 @@ const texts: Record<string, string> = {
   lastSearches: 'Last searches: '
 };
 
-const styles: Record<string, CSSProperties> = {
-  queriesListWrapper: {
-    marginTop: '10px'
-  },
-  recipesListWrapper: {
-    display: 'flex',
-    flexWrap: 'wrap'
-  },
-  queriesListItem: {
-    cursor: 'pointer'
-  },
-  recipesListItem: {
-    width: '33.3333%',
-    marginBottom: '30px',
-    padding: '10px'
-  }
-};
-
-const Index = () => {
+const Index: FunctionComponent = () => {
   const [queryValue, setQueryValue] = useState<string>('');
-  const [recentQueries, setRecentQueries] = useState([]);
+  const [recentQueries, setRecentQueries] = useState<string[]>([]);
   const [searchResults, setSearchResults] = useState([]);
+
   const handleQueryInputChange = (e) => setQueryValue(e.target.value);
+
   const submitQuery = () => {
     if (!queryValue) return;
     if (recentQueries.length >= 10) {
@@ -59,37 +41,6 @@ const Index = () => {
       .then((res) => setSearchResults(res.data.results))
       .catch((error) => console.log(error))
   };
-
-  // const QueriesList = () => (
-  //   <>
-  //     {texts.lastSearches}
-  //     <List style={styles.queriesListWrapper}>
-  //       {recentQueries.map((item) =>
-  //         <ListItem style={styles.queriesListItem} onClick={handleRecentQueryClick}>
-  //           {item}
-  //         </ListItem>
-  //       )}
-  //     </List>
-  //   </>
-  // );
-
-  const RecipesList = () => (
-    <Flex as='div'>
-      <List style={styles.recipesListWrapper}>
-        {searchResults.map((item) =>
-          <ListItem style={styles.recipesListItem}>
-            <Image
-              objectFit="cover"
-              src={item.image}
-              alt={item.title}
-              mb='4'
-            />
-            {item.title}
-          </ListItem>
-        )}
-      </List>
-    </Flex>
-  );
 
   return (
     <Container>
@@ -102,9 +53,9 @@ const Index = () => {
             placeholder='Please enter query'
           />
           <Button
-            width="100%"
-            variant="solid"
-            colorScheme="green"
+            width='100%'
+            variant='solid'
+            colorScheme='green'
             onClick={submitQuery}
             disabled={!queryValue}
           >
@@ -114,12 +65,11 @@ const Index = () => {
         {recentQueries.length &&
           <QueriesList
             data={recentQueries}
-            queryValue={queryValue}
             setQuery={setQueryValue}
             setSearchResults={setSearchResults}
           />
         }
-        <RecipesList />
+        <RecipesList data={searchResults}/>
       </Main>
       <DarkModeSwitch/>
       <Footer>
@@ -129,4 +79,4 @@ const Index = () => {
   );
 };
 
-export default Index
+export default Index;
